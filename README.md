@@ -51,6 +51,27 @@ Subnet resource를 사용하면 Terraform이 subnet 리소스를 생성한 뒤�
 
 Custom policy 적용 시 NSG가 없는 subnet과 VNet은 생성될 수 없기 때문에 NSG를 매핑하기도 전에 Policy로 인해 subnet을 생성할 수 없게 됨. 이를 방지하기 위해 VNet 리소스를 이용해 subnet을 생성한 뒤 data로 subnet을 가져오는 방식으로 변경.
 
-> [!Note] 
+<!-- > [!Note] 
 > Subnet 자체 다른 설정을 modify 하려면 terraform import 를 통해 state를 동기화해야 함. 
-> terraform import azurerm_subnet.example "/subscriptions/subscription_id/resourceGroups/resource_group_name/providers/Microsoft.Network/virtualNetworks/vnet_name/subnets/subnet_name"
+> terraform import azurerm_subnet.example "/subscriptions/subscription_id/resourceGroups/resource_group_name/providers/Microsoft.Network/virtualNetworks/vnet_name/subnets/subnet_name" -->
+>
+## Subnet 리소스 업데이트 및 세부 설정 방법
+
+Subnet 정의 방법 변경으로 인해 기존 `azurerm_subnet` 리소스 이용 방식을 쓸 수 없음. 
+대안책으로 [`azapi` provider](https://registry.terraform.io/providers/Azure/azapi/latest/docs#example-usage)의 `azapi_update_resource` 를 이용하면 subnet 리소스의 설정을 업데이트할 수 있음.
+
+예시) subnet의 privateEndpointNetworkPolicies 설정 - `main.tf`
+```hcl
+resource "azapi_update_resource" "subnet1-update" {
+  type = "Microsoft.Network/virtualNetworks/subnets@2023-04-01"
+  resource_id = local.subnet_id
+  body = jsonencode({
+    properties = {
+      privateEndpointNetworkPolicies = "Enabled"
+    }
+  })
+}
+```
+
+body 내의 설정 가능 값은 [azapi subnet 문서](https://learn.microsoft.com/en-us/azure/templates/microsoft.network/virtualnetworks/subnets?pivots=deployment-language-terraform#terraform-azapi-provider-resource-definition) 참고 
+

@@ -23,7 +23,7 @@ resource "azurerm_virtual_network" "example" {
     name           = "subnet1"
     address_prefix = "10.0.1.0/24"
     security_group = azurerm_network_security_group.example.id
-  }
+ }
 
   subnet {
     name = "subnet2"
@@ -37,6 +37,10 @@ data "azurerm_subnet" "subnet1" {
     name                 = "subnet1"
     resource_group_name  = azurerm_resource_group.example.name
     virtual_network_name = azurerm_virtual_network.example.name
+}
+
+locals {
+  subnet_id = data.azurerm_subnet.subnet1.id
 }
 
 # 예시, subnet 에 NIC 생성
@@ -56,4 +60,14 @@ data "azurerm_subnet" "subnet2" {
     name                = "subnet2"
     resource_group_name = azurerm_resource_group.example.name
     virtual_network_name = azurerm_virtual_network.example.name
+}
+
+resource "azapi_update_resource" "subnet1-update" {
+  type = "Microsoft.Network/virtualNetworks/subnets@2023-04-01"
+  resource_id = local.subnet_id
+  body = jsonencode({
+    properties = {
+      privateEndpointNetworkPolicies = "Enabled"
+    }
+  })
 }
