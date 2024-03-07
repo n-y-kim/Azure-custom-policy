@@ -50,3 +50,7 @@ data "azurerm_subnet" "subnet1" {
 Subnet resource를 사용하면 Terraform이 subnet 리소스를 생성한 뒤에 별도의 [`azurerm_subnet_network_security_group_association` 리소스](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_network_security_group_association)를 이용하여 NSG와 Subnet을 매핑해야 함.
 
 Custom policy 적용 시 NSG가 없는 subnet과 VNet은 생성될 수 없기 때문에 NSG를 매핑하기도 전에 Policy로 인해 subnet을 생성할 수 없게 됨. 이를 방지하기 위해 VNet 리소스를 이용해 subnet을 생성한 뒤 data로 subnet을 가져오는 방식으로 변경.
+
+> [!Note] 
+> Subnet 자체 다른 설정을 modify 하려면 terraform import 를 통해 state를 동기화해야 함. 
+> terraform import azurerm_subnet.example "/subscriptions/subscription_id/resourceGroups/resource_group_name/providers/Microsoft.Network/virtualNetworks/vnet_name/subnets/subnet_name"
