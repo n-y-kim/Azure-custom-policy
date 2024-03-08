@@ -10,6 +10,14 @@
                   "equals": "Microsoft.Network/virtualNetworks/subnets"
                 },
                 {
+                  "field": "name", 
+                  "notequals": "GatewaySubnet" 
+                },
+                {
+                  "field": "name", 
+                  "notequals": "AzureFirewallSubnet"
+                },
+                {
                   "field": "Microsoft.Network/virtualNetworks/subnets/networkSecurityGroup.id",
                   "exists": false
                 }
@@ -30,6 +38,14 @@
                             }
                         ]
                     }
+                },
+                {
+                  "field": "name", 
+                  "notequals": "GatewaySubnet" 
+                },
+                {
+                  "field": "name", 
+                  "notequals": "AzureFirewallSubnet"
                 }
               ]
             }
